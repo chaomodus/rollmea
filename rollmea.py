@@ -6,6 +6,8 @@ import imp
 
 TESTMODE=False
 
+random_prefixes = ('totally','totes','absolutely','certainly','mostly','definitely','er','erm','um')
+
 def load_python_config(filename):
     return imp.load_module('config',file(filename,'r'), '', ('.py','U',1))
 
@@ -150,7 +152,7 @@ if __name__ == '__main__':
                         corpus = ('EVEN','ODD')
                     if corpus:
                         # calculate 1 in 2 outcome
-                        tweet = '@'+mention.author.screen_name+' '+dice.choice(corpus)
+                        tweet = '@'+mention.author.screen_name+' '+dice.choice(random_prefixes)+' '+dice.choice(corpus)
                     else:
                         continue
                 else:
@@ -168,7 +170,10 @@ if __name__ == '__main__':
             for tw in queue:
                 print tw
                 if not TESTMODE:
-                    api.update_status(tw[1], tw[0])
+                    try:
+                        api.update_status(tw[1], tw[0])
+                    except tweepy.error.TweepError, inst:
+                        print "error: ",inst
                 time.sleep(config.TWEETDELAY)
 
             print "Done processing mentions. Sleeping for 60s."
